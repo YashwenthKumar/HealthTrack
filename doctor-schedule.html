@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthTrack Pro - Doctor Schedule</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/scrollbar.css">
+    <style>
+        :root {
+            --primary-color: #2a7fba;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        
+        .text-primary { color: var(--primary-color); }
+        .text-success { color: var(--success-color); }
+        .text-warning { color: var(--warning-color); }
+        .text-danger { color: var(--danger-color); }
+        
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 240px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+        }
+        
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 15px 0;
+        }
+        
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-nav li a:hover, .sidebar-nav li.active a {
+            background: #f0f7ff;
+            color: var(--primary-color);
+        }
+        
+        .sidebar-nav li a i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+            text-decoration: none;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            width: calc(100vw - 240px); /* Adjust for sidebar */
+            max-width: 100%;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+        
+        /* Header Styles */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .header-left h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        #current-date {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .notifications {
+            position: relative;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .notifications .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .user-profile img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--primary-color);
+        }
+        
+        /* Schedule Content */
+        .schedule-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+        
+        /* Schedule Controls */
+        .schedule-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            width: 100%;
+        }
+        
+        .view-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .view-option {
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .view-option.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .view-option:not(.active) {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .current-date-range {
+            font-weight: 500;
+            min-width: 200px;
+            text-align: center;
+        }
+        
+        .nav-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: #f5f5f5;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .nav-arrow:hover {
+            background: #e0e0e0;
+        }
+        
+        /* Calendar View */
+        .calendar-view {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            width: 100%;
+        }
+        
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-body {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+        
+        .calendar-day {
+            min-height: 100px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            padding: 10px;
+            position: relative;
+        }
+        
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .day-number {
+            font-weight: 500;
+        }
+        
+        .day-number.today {
+            background: var(--primary-color);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .day-events {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .event-item {
+            font-size: 12px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            background: #e1f0ff;
+            color: var(--primary-color);
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .event-item.video {
+            background: #e1f7e8;
+            color: var(--success-color);
+        }
+        
+        .event-item.in-person {
+            background: #fff2e0;
+            color: var(--warning-color);
+        }
+        
+        .event-item.emergency {
+            background: #fde8e8;
+            color: var(--danger-color);
+        }
+        
+        .more-events {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        
+        /* List View */
+        .list-view {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: none;
+            width: 100%;
+        }
+        
+        .list-view.active {
+            display: block;
+        }
+        
+        .appointment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+        
+        .appointment-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f9fbfe;
+            border-radius: 8px;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+        
+        .appointment-time {
+            min-width: 100px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        .appointment-details {
+            flex: 1;
+            padding: 0 15px;
+            min-width: 0; /* Prevent flex item from overflowing */
+        }
+        
+        .appointment-patient {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        
+        .appointment-patient img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .appointment-patient-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .appointment-type {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #666;
+            white-space: nowrap;
+        }
+        
+        .appointment-notes {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .appointment-actions {
+            display: flex;
+            gap: 10px;
+            flex-shrink: 0; /* Prevent buttons from shrinking */
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #236fa3;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #666;
+        }
+        
+        .btn-outline:hover {
+            background: #f5f5f5;
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-warning {
+            background: var(--warning-color);
+            color: #333;
+        }
+        
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        
+        /* Add Appointment */
+        .add-appointment {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .add-appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        
+        .form-group {
+            flex: 1;
+            min-width: 0; /* Prevent flex items from overflowing */
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .calendar-day {
+                min-height: 120px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .schedule-controls {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .date-navigation {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .calendar-body {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .calendar-day:nth-child(6),
+            .calendar-day:nth-child(7) {
+                display: none;
+            }
+            
+            .main-content {
+                width: calc(100vw - 60px);
+                padding: 15px;
+            }
+            
+            .sidebar {
+                width: 60px;
+                overflow: hidden;
+            }
+            
+            .sidebar-nav li a span {
+                display: none;
+            }
+            
+            .logo h1, .sidebar-header {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-layout {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .sidebar-nav ul {
+                display: flex;
+                padding: 0;
+            }
+            
+            .sidebar-nav li a {
+                padding: 15px 12px;
+                white-space: nowrap;
+            }
+            
+            .sidebar-header, .sidebar-footer {
+                display: none;
+            }
+            
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .calendar-body {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .calendar-day:nth-child(6),
+            .calendar-day:nth-child(7) {
+                display: block;
+            }
+            
+            .appointment-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .appointment-details {
+                padding: 10px 0;
+                width: 100%;
+            }
+            
+            .appointment-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .main-content {
+                width: 100vw;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .calendar-body {
+                grid-template-columns: 1fr;
+            }
+            
+            .view-options {
+                flex-wrap: wrap;
+            }
+            
+            .calendar-day {
+                min-height: auto;
+            }
+        }
+    /* Add these styles to your existing CSS */
+    .dashboard-layout {
+        position: relative;
+    }
+    
+    .sidebar {
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto; /* Enable scrolling if content exceeds viewport height */
+        z-index: 100; /* Ensure sidebar stays above other content */
+    }
+    
+    .main-content {
+        margin-left: 240px; /* Match the width of your sidebar */
+        width: calc(100% - 240px); /* Adjust width to account for fixed sidebar */
+        overflow-x: hidden;
+    }
+    
+    /* For responsive adjustments */
+    @media (max-width: 992px) {
+        .sidebar {
+            width: 60px;
+        }
+        .main-content {
+            margin-left: 60px;
+            width: calc(100% - 60px);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar {
+            position: static;
+            width: 100%;
+            height: auto;
+        }
+        .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h1>HealthTrack</h1>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="doctor-dashboard.html">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="appointments.html">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Appointments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-patient.html">
+                            <i class="fas fa-procedures"></i>
+                            <span>My Patients</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="telemedicine.html">
+                            <i class="fas fa-video"></i>
+                            <span>Telemedicine</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-prescriptions.html">
+                            <i class="fas fa-prescription-bottle-alt"></i>
+                            <span>Prescriptions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-profile.html">
+                            <i class="fas fa-user-md"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-schedule.html">
+                            <i class="fas fa-clock"></i>
+                            <span>Schedule</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="logout.html" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h2>My Schedule</h2>
+                    <p id="current-date">Monday, June 12, 2023</p>
+                </div>
+                <div class="header-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Doctor Profile">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Schedule Content -->
+            <div class="schedule-container">
+                <!-- Schedule Controls -->
+                <div class="schedule-controls">
+                    <div class="view-options">
+                        <div class="view-option active" data-view="calendar">
+                            <i class="fas fa-calendar"></i> Calendar
+                        </div>
+                        <div class="view-option" data-view="list">
+                            <i class="fas fa-list"></i> List
+                        </div>
+                    </div>
+                    <div class="date-navigation">
+                        <div class="nav-arrow" id="prev-week">
+                            <i class="fas fa-chevron-left"></i>
+                        </div>
+                        <div class="current-date-range" id="date-range">
+                            June 12 - 18, 2023
+                        </div>
+                        <div class="nav-arrow" id="next-week">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Calendar View -->
+                <div class="calendar-view" id="calendar-view">
+                    <div class="calendar-header">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div class="calendar-body">
+                        <!-- Week starts on Sunday -->
+                        <div class="calendar-day">
+                            <div class="day-header">
+                                <div class="day-number">11</div>
+                            </div>
+                            <div class="day-events">
+                                <!-- No events for this day -->
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">
+                                <div class="day-number today">12</div>
+                            </div>
+                            <div class="day-events">
+                                <div class="event-item video">
+                                    <i class="fas fa-video"></i> 9:00 AM
+                                </div>
+                                <div class="event-item in-person">
+                                    <i class="fas fa-user"></i> 11:30 AM
+                                </div>
+                                <div class="event-item video">
+                                    <i class="fas fa-video"></i> 2:00 PM
+                                </div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">
+                                <div class="day-number">13</div>
+                            </div>
+                            <div class="day-events">
+                                <div class="event-item in-person">
+                                    <i class="fas fa-user"></i> 10:00 AM
+                                </div>
+                                <div class="event-item in-person">
+                                    <i class="fas fa-user"></i> 1:30 PM
+                                </div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">
+                                <div class="day-number">14</div>
+                            </div>
+                            <div class="day-events">
+                                <div class="event-item video">
+                                    <i class="fas fa-video"></i> 6:00 PM
+                                </div>
+                                <div class="event-item video">
+                                    <i class="fas fa-video"></i> 7:00 PM
+                                </div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">
+                                <div class="day-number">15</div>
+                            </div>
+                            <div class="day-events">
+                                <div class="event-item in-person">
+                                    <i class="fas fa-user"></i> 8:30 AM
+                                </div>
+                                <div class="event-item emergency">
+                                    <i class="fas fa-exclamation-circle"></i> 12:00 PM
+                                </div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">
+                                <div class="day-number">16</div>
+                            </div>
+                            <div class="day-events">
+                                <div class="event-item in-person">
+                                    <i class="fas fa-user"></i> 9:00 AM
+                                </div>
+                            </div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">
+                                <div class="day-number">17</div>
+                            </div>
+                            <div class="day-events">
+                                <!-- No events for this day -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- List View -->
+                <div class="list-view" id="list-view">
+                    <div class="appointment-list">
+                        <div class="appointment-card">
+                            <div class="appointment-time">
+                                9:00 AM - 9:30 AM
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-patient">
+                                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Patient">
+                                    <div>
+                                        <div class="appointment-patient-name">Yashwenth Kumar</div>
+                                        <div class="appointment-type">
+                                            <i class="fas fa-video"></i> Video Consultation
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="appointment-notes">
+                                    Follow-up for hypertension management
+                                </div>
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="btn btn-sm btn-outline">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-primary">
+                                    <i class="fas fa-video"></i> Start
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="appointment-card">
+                            <div class="appointment-time">
+                                11:30 AM - 12:00 PM
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-patient">
+                                    <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Patient">
+                                    <div>
+                                        <div class="appointment-patient-name">Sarah Williams</div>
+                                        <div class="appointment-type">
+                                            <i class="fas fa-user"></i> In-Person Visit
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="appointment-notes">
+                                    New patient consultation - heart murmur evaluation
+                                </div>
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="btn btn-sm btn-outline">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-success">
+                                    <i class="fas fa-check"></i> Confirm
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="appointment-card">
+                            <div class="appointment-time">
+                                2:00 PM - 2:45 PM
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-patient">
+                                    <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Patient">
+                                    <div>
+                                        <div class="appointment-patient-name">Robert Chen</div>
+                                        <div class="appointment-type">
+                                            <i class="fas fa-video"></i> Video Consultation
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="appointment-notes">
+                                    Post-op follow-up after angioplasty
+                                </div>
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="btn btn-sm btn-outline">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn btn-sm btn-primary">
+                                    <i class="fas fa-video"></i> Start
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="appointment-card">
+                            <div class="appointment-time">
+                                12:00 PM - 1:00 PM
+                            </div>
+                            <div class="appointment-details">
+                                <div class="appointment-patient">
+                                    <i class="fas fa-exclamation-circle text-danger" style="font-size: 20px;"></i>
+                                    <div>
+                                        <div class="appointment-patient-name">Emergency Slot</div>
+                                        <div class="appointment-type">
+                                            <i class="fas fa-ambulance"></i> Emergency
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="appointment-notes">
+                                    Reserved for urgent cases
+                                </div>
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="btn btn-sm btn-outline">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Add New Appointment -->
+                <div class="add-appointment">
+                    <div class="add-appointment-header">
+                        <h3>Add New Appointment</h3>
+                        <button class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus"></i> Add Slot
+                        </button>
+                    </div>
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="patient">Patient</label>
+                                <select class="form-control" id="patient">
+                                    <option value="">Select patient or add new</option>
+                                    <option value="1">Yashwenth Kumar</option>
+                                    <option value="2">Sarah Williams</option>
+                                    <option value="3">Robert Chen</option>
+                                    <option value="4">Michael Brown</option>
+                                    <option value="5">Jennifer Lopez</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="appointment-type">Appointment Type</label>
+                                <select class="form-control" id="appointment-type">
+                                    <option value="video">Video Consultation</option>
+                                    <option value="in-person">In-Person Visit</option>
+                                    <option value="procedure">Procedure</option>
+                                    <option value="emergency">Emergency</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="appointment-date">Date</label>
+                                <input type="date" class="form-control" id="appointment-date">
+                            </div>
+                            <div class="form-group">
+                                <label for="start-time">Start Time</label>
+                                <input type="time" class="form-control" id="start-time">
+                            </div>
+                            <div class="form-group">
+                                <label for="end-time">End Time</label>
+                                <input type="time" class="form-control" id="end-time">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="notes">Notes</label>
+                            <textarea class="form-control" id="notes" placeholder="Any special notes for this appointment..."></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                Save Appointment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="assets/js/shared.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ==================== UTILITY FUNCTIONS ====================
+            function showSuccessToast(message) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+                Toast.fire({
+                    icon: 'success',
+                    title: message
+                })
+            }
+    
+            function showErrorToast(message) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+                Toast.fire({
+                    icon: 'error',
+                    title: message
+                })
+            }
+    
+            function formatDate(date, options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) {
+                return date.toLocaleDateString('en-US', options);
+            }
+    
+            // ==================== INITIAL SETUP ====================
+            // Set current date
+            document.getElementById('current-date').textContent = formatDate(new Date());
+    
+            // Set default date for appointment form
+            document.getElementById('appointment-date').valueAsDate = new Date();
+    
+            // ==================== NOTIFICATIONS FUNCTIONALITY ====================
+            const notificationBell = document.querySelector('.notifications');
+            const notificationBadge = document.querySelector('.notifications .badge');
+            
+            // Sample notifications data
+            const notifications = [
+                {
+                    id: 1,
+                    title: "New appointment request",
+                    message: "Michael Brown requested an appointment for tomorrow",
+                    time: "10 mins ago",
+                    read: false
+                },
+                {
+                    id: 2,
+                    title: "Patient message",
+                    message: "Sarah Williams sent you a new message about her prescription",
+                    time: "2 hours ago",
+                    read: false
+                },
+                {
+                    id: 3,
+                    title: "System update",
+                    message: "New telemedicine features available in your dashboard",
+                    time: "1 day ago",
+                    read: true
+                }
+            ];
+    
+            notificationBell.addEventListener('click', function() {
+                // Mark all as read
+                notifications.forEach(notif => notif.read = true);
+                notificationBadge.style.display = 'none';
+                
+                // Create notification dropdown HTML
+                let notificationsHTML = notifications.map(notif => `
+                    <div class="notification-item ${notif.read ? 'read' : 'unread'}">
+                        <div class="notification-title">${notif.title}</div>
+                        <div class="notification-message">${notif.message}</div>
+                        <div class="notification-time">${notif.time}</div>
+                    </div>
+                `).join('');
+                
+                Swal.fire({
+                    title: 'Notifications',
+                    html: `<div class="notifications-container">${notificationsHTML}</div>`,
+                    showConfirmButton: false,
+                    width: '400px',
+                    customClass: {
+                        popup: 'notifications-popup'
+                    }
+                });
+            });
+    
+            // Update badge count
+            const unreadCount = notifications.filter(n => !n.read).length;
+            if (unreadCount > 0) {
+                notificationBadge.textContent = unreadCount;
+            } else {
+                notificationBadge.style.display = 'none';
+            }
+    
+            // ==================== VIEW TOGGLE FUNCTIONALITY ====================
+            const viewOptions = document.querySelectorAll('.view-option');
+            const calendarView = document.getElementById('calendar-view');
+            const listView = document.getElementById('list-view');
+            
+            viewOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    viewOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    if (this.dataset.view === 'calendar') {
+                        calendarView.style.display = 'block';
+                        listView.style.display = 'none';
+                    } else {
+                        calendarView.style.display = 'none';
+                        listView.style.display = 'block';
+                    }
+                });
+            });
+    
+            // ==================== DATE NAVIGATION FUNCTIONALITY ====================
+            let currentWeekStart = new Date();
+            currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay()); // Start of week (Sunday)
+            
+            function updateDateRange() {
+                const weekEnd = new Date(currentWeekStart);
+                weekEnd.setDate(weekEnd.getDate() + 6);
+                
+                const startStr = currentWeekStart.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+                const endStr = weekEnd.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                
+                document.getElementById('date-range').textContent = `${startStr} - ${endStr}`;
+                
+                // Update calendar days
+                updateCalendarDays();
+            }
+            
+            function updateCalendarDays() {
+                const calendarDays = document.querySelectorAll('.calendar-day');
+                const tempDate = new Date(currentWeekStart);
+                
+                calendarDays.forEach((day, index) => {
+                    const dayNumber = day.querySelector('.day-number');
+                    tempDate.setDate(currentWeekStart.getDate() + index);
+                    
+                    // Update day number
+                    dayNumber.textContent = tempDate.getDate();
+                    dayNumber.className = 'day-number';
+                    
+                    // Highlight today
+                    const today = new Date();
+                    if (tempDate.toDateString() === today.toDateString()) {
+                        dayNumber.classList.add('today');
+                    }
+                    
+                    // Clear existing events
+                    const dayEvents = day.querySelector('.day-events');
+                    dayEvents.innerHTML = '';
+                    
+                    // Add sample events (in a real app, you would fetch these from your data)
+                    addSampleEvents(dayEvents, tempDate);
+                });
+            }
+            
+            function addSampleEvents(container, date) {
+                // This is just for demo purposes - in a real app you would fetch real appointments
+                const dayOfWeek = date.getDay();
+                const dayNum = date.getDate();
+                
+                // Clear existing more events indicator
+                const moreEvents = container.querySelector('.more-events');
+                if (moreEvents) moreEvents.remove();
+                
+                // Add sample events based on day
+                if (dayOfWeek === 1) { // Monday
+                    if (dayNum % 2 === 0) {
+                        addEvent(container, 'video', '9:00 AM');
+                        addEvent(container, 'in-person', '11:30 AM');
+                        addEvent(container, 'video', '2:00 PM');
+                    } else {
+                        addEvent(container, 'in-person', '10:00 AM');
+                        addEvent(container, 'in-person', '1:30 PM');
+                    }
+                } else if (dayOfWeek === 3) { // Wednesday
+                    addEvent(container, 'video', '6:00 PM');
+                    addEvent(container, 'video', '7:00 PM');
+                } else if (dayOfWeek === 4) { // Thursday
+                    addEvent(container, 'in-person', '8:30 AM');
+                    if (dayNum % 3 === 0) {
+                        addEvent(container, 'emergency', '12:00 PM');
+                    }
+                } else if (dayOfWeek === 5) { // Friday
+                    addEvent(container, 'in-person', '9:00 AM');
+                }
+                
+                // Add "more events" indicator if more than 3 events
+                if (container.children.length > 3) {
+                    const moreEvents = document.createElement('div');
+                    moreEvents.className = 'more-events';
+                    moreEvents.textContent = `+${container.children.length - 3} more`;
+                    container.appendChild(moreEvents);
+                    
+                    // Keep only first 3 events visible
+                    for (let i = 3; i < container.children.length - 1; i++) {
+                        container.children[i].style.display = 'none';
+                    }
+                }
+            }
+            
+            function addEvent(container, type, time) {
+                const event = document.createElement('div');
+                event.className = `event-item ${type}`;
+                
+                let icon = '';
+                switch(type) {
+                    case 'video':
+                        icon = '<i class="fas fa-video"></i>';
+                        break;
+                    case 'in-person':
+                        icon = '<i class="fas fa-user"></i>';
+                        break;
+                    case 'emergency':
+                        icon = '<i class="fas fa-exclamation-circle"></i>';
+                        break;
+                }
+                
+                event.innerHTML = `${icon} ${time}`;
+                container.appendChild(event);
+                
+                // Add click handler to show event details
+                event.addEventListener('click', function() {
+                    showAppointmentDetails(type, time);
+                });
+            }
+            
+            document.getElementById('prev-week').addEventListener('click', function() {
+                currentWeekStart.setDate(currentWeekStart.getDate() - 7);
+                updateDateRange();
+            });
+            
+            document.getElementById('next-week').addEventListener('click', function() {
+                currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+                updateDateRange();
+            });
+            
+            // Initialize
+            updateDateRange();
+    
+            // ==================== APPOINTMENT DETAILS FUNCTIONALITY ====================
+            function showAppointmentDetails(type, time) {
+                let patientName = "Sample Patient";
+                let patientImg = "https://randomuser.me/api/portraits/";
+                let reason = "Routine check-up";
+                
+                // Generate random patient data for demo
+                const randomGender = Math.random() > 0.5 ? 'men' : 'women';
+                const randomId = Math.floor(Math.random() * 50) + 1;
+                patientImg += `${randomGender}/${randomId}.jpg`;
+                
+                const names = {
+                    men: ["James", "John", "Robert", "Michael", "William", "David", "Richard", "Joseph", "Thomas", "Daniel"],
+                    women: ["Mary", "Patricia", "Jennifer", "Linda", "Elizabeth", "Barbara", "Susan", "Jessica", "Sarah", "Karen"]
+                };
+                
+                patientName = names[randomGender][Math.floor(Math.random() * 10)] + " " + 
+                              ["Smith", "Johnson", "Williams", "Brown", "Jones", "Miller", "Davis", "Garcia", "Rodriguez", "Wilson"][Math.floor(Math.random() * 10)];
+                
+                const reasons = [
+                    "Routine check-up",
+                    "Follow-up visit",
+                    "New patient consultation",
+                    "Prescription refill",
+                    "Test results review",
+                    "Symptoms evaluation",
+                    "Post-op follow-up",
+                    "Vaccination",
+                    "Emergency consultation"
+                ];
+                reason = reasons[Math.floor(Math.random() * reasons.length)];
+                
+                let typeText = "";
+                let typeClass = "";
+                switch(type) {
+                    case 'video':
+                        typeText = "Video Consultation";
+                        typeClass = "text-primary";
+                        break;
+                    case 'in-person':
+                        typeText = "In-Person Visit";
+                        typeClass = "text-warning";
+                        break;
+                    case 'emergency':
+                        typeText = "Emergency";
+                        typeClass = "text-danger";
+                        break;
+                }
+                
+                Swal.fire({
+                    title: 'Appointment Details',
+                    html: `
+                        <div class="appointment-details-modal">
+                            <div class="patient-info">
+                                <img src="${patientImg}" alt="Patient" class="patient-img">
+                                <div>
+                                    <h4>${patientName}</h4>
+                                    <div class="appointment-type ${typeClass}">
+                                        <i class="fas fa-${type === 'video' ? 'video' : type === 'emergency' ? 'exclamation-circle' : 'user'}"></i>
+                                        ${typeText}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="appointment-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>${formatDate(new Date(), { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${time}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-stethoscope"></i>
+                                    <span>${reason}</span>
+                                </div>
+                            </div>
+                            <div class="appointment-notes">
+                                <h5>Notes:</h5>
+                                <p>${reason === "Emergency consultation" ? 
+                                    "Patient reporting chest pain and shortness of breath. Needs urgent evaluation." : 
+                                    "Patient coming in for regular follow-up. Last visit was 3 months ago. Needs blood pressure check and medication review."}</p>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Start Appointment',
+                    cancelButtonText: 'Close',
+                    width: '600px',
+                    customClass: {
+                        popup: 'appointment-details-popup'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        showSuccessToast('Starting appointment with ' + patientName);
+                        // In a real app, this would redirect to the consultation page
+                    }
+                });
+            }
+    
+            // Add click handlers to all calendar events
+            document.querySelectorAll('.event-item').forEach(event => {
+                event.addEventListener('click', function() {
+                    const type = this.className.replace('event-item ', '');
+                    const time = this.textContent.replace(/^\s+|\s+$/g, '').split(' ')[1] + ' ' + this.textContent.replace(/^\s+|\s+$/g, '').split(' ')[2];
+                    showAppointmentDetails(type, time);
+                });
+            });
+    
+            // Add click handlers to list view appointment cards
+            document.querySelectorAll('.appointment-card').forEach(card => {
+                const timeElement = card.querySelector('.appointment-time');
+                const typeElement = card.querySelector('.appointment-type i');
+                
+                let type = '';
+                if (typeElement.classList.contains('fa-video')) {
+                    type = 'video';
+                } else if (typeElement.classList.contains('fa-user')) {
+                    type = 'in-person';
+                } else if (typeElement.classList.contains('fa-exclamation-circle')) {
+                    type = 'emergency';
+                }
+                
+                const time = timeElement.textContent.replace(/^\s+|\s+$/g, '').split(' - ')[0];
+                
+                card.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on buttons
+                    if (!e.target.closest('.appointment-actions')) {
+                        showAppointmentDetails(type, time);
+                    }
+                });
+            });
+    
+            // ==================== APPOINTMENT ACTIONS FUNCTIONALITY ====================
+            // Edit appointment buttons
+            document.querySelectorAll('.appointment-actions .btn-outline').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.appointment-card');
+                    const patientName = card.querySelector('.appointment-patient-name').textContent;
+                    const time = card.querySelector('.appointment-time').textContent;
+                    const type = card.querySelector('.appointment-type i').classList.contains('fa-video') ? 'video' : 
+                                card.querySelector('.appointment-type i').classList.contains('fa-user') ? 'in-person' : 'emergency';
+                    const notes = card.querySelector('.appointment-notes').textContent;
+                    
+                    Swal.fire({
+                        title: 'Edit Appointment',
+                        html: `
+                            <form class="edit-appointment-form">
+                                <div class="form-group">
+                                    <label>Patient</label>
+                                    <input type="text" class="swal2-input" value="${patientName}">
+                                </div>
+                                <div class="form-group">
+                                    <label>Appointment Type</label>
+                                    <select class="swal2-input">
+                                        <option value="video" ${type === 'video' ? 'selected' : ''}>Video Consultation</option>
+                                        <option value="in-person" ${type === 'in-person' ? 'selected' : ''}>In-Person Visit</option>
+                                        <option value="emergency" ${type === 'emergency' ? 'selected' : ''}>Emergency</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Time</label>
+                                    <input type="text" class="swal2-input" value="${time}">
+                                </div>
+                                <div class="form-group">
+                                    <label>Notes</label>
+                                    <textarea class="swal2-textarea">${notes}</textarea>
+                                </div>
+                            </form>
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Save Changes',
+                        width: '600px'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            showSuccessToast('Appointment updated successfully!');
+                        }
+                    });
+                });
+            });
+    
+            // Start/Confirm appointment buttons
+            document.querySelectorAll('.appointment-actions .btn-primary, .appointment-actions .btn-success').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.appointment-card');
+                    const patientName = card.querySelector('.appointment-patient-name').textContent;
+                    
+                    if (this.classList.contains('btn-primary')) {
+                        // Start video consultation
+                        showSuccessToast(`Starting video consultation with ${patientName}`);
+                        // In a real app, this would redirect to the video consultation page
+                    } else {
+                        // Confirm appointment
+                        showSuccessToast(`Appointment with ${patientName} confirmed`);
+                        this.textContent = 'Confirmed';
+                        this.classList.remove('btn-success');
+                        this.classList.add('btn-outline');
+                        this.disabled = true;
+                    }
+                });
+            });
+    
+            // ==================== ADD NEW APPOINTMENT FUNCTIONALITY ====================
+            const addSlotBtn = document.querySelector('.add-appointment-header button');
+            const appointmentForm = document.querySelector('.add-appointment form');
+            
+            addSlotBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Add Time Slot',
+                    html: `
+                        <form class="add-slot-form">
+                            <div class="form-group">
+                                <label>Date</label>
+                                <input type="date" class="swal2-input" value="${new Date().toISOString().split('T')[0]}">
+                            </div>
+                            <div class="form-group">
+                                <label>Start Time</label>
+                                <input type="time" class="swal2-input" value="09:00">
+                            </div>
+                            <div class="form-group">
+                                <label>End Time</label>
+                                <input type="time" class="swal2-input" value="17:00">
+                            </div>
+                            <div class="form-group">
+                                <label>Slot Type</label>
+                                <select class="swal2-input">
+                                    <option value="available">Available for appointments</option>
+                                    <option value="unavailable">Unavailable (personal time)</option>
+                                    <option value="emergency">Emergency slots only</option>
+                                </select>
+                            </div>
+                        </form>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Add Slot',
+                    width: '500px'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        showSuccessToast('New time slot added successfully!');
+                    }
+                });
+            });
+            
+            appointmentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const patient = document.getElementById('patient').value;
+                const type = document.getElementById('appointment-type').value;
+                const date = document.getElementById('appointment-date').value;
+                const startTime = document.getElementById('start-time').value;
+                const endTime = document.getElementById('end-time').value;
+                const notes = document.getElementById('notes').value;
+                
+                if (!patient) {
+                    showErrorToast('Please select a patient');
+                    return;
+                }
+                
+                if (!date || !startTime || !endTime) {
+                    showErrorToast('Please fill in all required time fields');
+                    return;
+                }
+                
+                // In a real app, you would send this data to your backend
+                showSuccessToast('Appointment scheduled successfully!');
+                this.reset();
+                document.getElementById('appointment-date').valueAsDate = new Date();
+            });
+    
+            // ==================== RESPONSIVE SIDEBAR TOGGLE ====================
+            function handleSidebar() {
+                const sidebar = document.querySelector('.sidebar');
+                if (window.innerWidth <= 992) {
+                    sidebar.style.width = '60px';
+                    document.querySelectorAll('.sidebar-nav li a span').forEach(span => {
+                        span.style.display = 'none';
+                    });
+                    document.querySelector('.logo h1').style.display = 'none';
+                } else {
+                    sidebar.style.width = '240px';
+                    document.querySelectorAll('.sidebar-nav li a span').forEach(span => {
+                        span.style.display = 'inline';
+                    });
+                    document.querySelector('.logo h1').style.display = 'block';
+                }
+                
+                if (window.innerWidth <= 768) {
+                    sidebar.style.flexDirection = 'row';
+                    sidebar.style.overflowX = 'auto';
+                    document.querySelector('.sidebar-nav ul').style.flexDirection = 'row';
+                    document.querySelector('.sidebar-header').style.display = 'none';
+                    document.querySelector('.sidebar-footer').style.display = 'none';
+                } else {
+                    sidebar.style.flexDirection = 'column';
+                    sidebar.style.overflowX = 'hidden';
+                    document.querySelector('.sidebar-nav ul').style.flexDirection = 'column';
+                    document.querySelector('.sidebar-header').style.display = 'block';
+                    document.querySelector('.sidebar-footer').style.display = 'block';
+                }
+            }
+    
+            window.addEventListener('resize', handleSidebar);
+            handleSidebar(); // Initial check
+    
+            // ==================== STYLES FOR MODALS ====================
+            const style = document.createElement('style');
+            style.textContent = `
+                .swal2-popup {
+                    font-family: 'Poppins', sans-serif;
+                }
+                .swal2-title {
+                    font-size: 22px;
+                    font-weight: 600;
+                }
+                .notifications-container {
+                    max-height: 400px;
+                    overflow-y: auto;
+                }
+                .notification-item {
+                    padding: 10px;
+                    border-bottom: 1px solid #eee;
+                }
+                .notification-item.unread {
+                    background-color: #f8f9fa;
+                }
+                .notification-title {
+                    font-weight: 600;
+                    margin-bottom: 5px;
+                }
+                .notification-message {
+                    color: #555;
+                    margin-bottom: 5px;
+                }
+                .notification-time {
+                    font-size: 12px;
+                    color: #888;
+                }
+                .appointment-details-modal {
+                    padding: 10px 0;
+                }
+                .patient-info {
+                    display: flex;
+                    align-items: center;
+                    gap: 15px;
+                    margin-bottom: 20px;
+                }
+                .patient-img {
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+                .appointment-meta {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    margin-bottom: 20px;
+                }
+                .meta-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                .meta-item i {
+                    width: 20px;
+                    text-align: center;
+                    color: #666;
+                }
+                .appointment-notes h5 {
+                    margin-bottom: 10px;
+                    font-size: 16px;
+                }
+                .appointment-notes p {
+                    color: #555;
+                    line-height: 1.5;
+                }
+                .edit-appointment-form .form-group,
+                .add-slot-form .form-group {
+                    margin-bottom: 15px;
+                }
+                .edit-appointment-form label,
+                .add-slot-form label {
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: 500;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

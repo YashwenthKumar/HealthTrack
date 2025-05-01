@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthTrack Pro - Prescription Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2a7fba;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .text-primary { color: var(--primary-color); }
+        .text-success { color: var(--success-color); }
+        .text-warning { color: var(--warning-color); }
+        .text-danger { color: var(--danger-color); }
+        
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 240px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 15px 0;
+        }
+        
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-nav li a:hover, .sidebar-nav li.active a {
+            background: #f0f7ff;
+            color: var(--primary-color);
+        }
+        
+        .sidebar-nav li a i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+            text-decoration: none;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Header Styles */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .header-left h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        #current-date {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .notifications {
+            position: relative;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .notifications .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .user-profile img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--primary-color);
+        }
+        
+        /* Dashboard Sections */
+        .dashboard-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .view-all {
+            font-size: 14px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        /* Patient Search */
+        .patient-search {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            position: relative;
+        }
+        
+        .search-input input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .search-input i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        /* Patient Info Card */
+        .patient-card {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            background: #f9fbfe;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .patient-avatar img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+        }
+        
+        .patient-details {
+            flex: 1;
+        }
+        
+        .patient-details h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .patient-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .patient-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .patient-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Prescription Form */
+        .prescription-form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        /* Medication List */
+        .medication-list {
+            margin-top: 20px;
+        }
+        
+        .medication-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: #f9fbfe;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .medication-details {
+            flex: 1;
+        }
+        
+        .medication-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .medication-dosage {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .medication-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #236fa3;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #666;
+        }
+        
+        .btn-outline:hover {
+            background: #f5f5f5;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        /* Recent Prescriptions */
+        .prescriptions-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .prescription-card {
+            background: #f9fbfe;
+            border-radius: 8px;
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .prescription-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .prescription-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .prescription-date {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .prescription-status {
+            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #e1f0ff;
+            color: var(--primary-color);
+        }
+        
+        .prescription-status.active {
+            background: #d4edda;
+            color: var(--success-color);
+        }
+        
+        .prescription-status.expired {
+            background: #f8d7da;
+            color: var(--danger-color);
+        }
+        
+        .prescription-patient {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .prescription-patient img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .prescription-patient h4 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        
+        .prescription-patient p {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .prescription-medications {
+            margin-bottom: 15px;
+        }
+        
+        .medication-badge {
+            display: inline-block;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .prescription-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
+            .prescriptions-list {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-layout {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .sidebar-nav ul {
+                display: flex;
+                padding: 0;
+            }
+            
+            .sidebar-nav li a {
+                padding: 15px 12px;
+                white-space: nowrap;
+            }
+            
+            .sidebar-header, .sidebar-footer {
+                display: none;
+            }
+            
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .patient-search {
+                flex-direction: column;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    /* Add these styles to your existing CSS */
+    .dashboard-layout {
+        position: relative;
+    }
+    
+    .sidebar {
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto; /* Enable scrolling if content exceeds viewport height */
+        z-index: 100; /* Ensure sidebar stays above other content */
+    }
+    
+    .main-content {
+        margin-left: 240px; /* Match the width of your sidebar */
+        width: calc(100% - 240px); /* Adjust width to account for fixed sidebar */
+        overflow-x: hidden;
+    }
+    
+    /* For responsive adjustments */
+    @media (max-width: 992px) {
+        .sidebar {
+            width: 60px;
+        }
+        .main-content {
+            margin-left: 60px;
+            width: calc(100% - 60px);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar {
+            position: static;
+            width: 100%;
+            height: auto;
+        }
+        .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
+
+    </style>
+    <link rel="stylesheet" href="assets/css/scrollbar.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h1>HealthTrack</h1>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="doctor-dashboard.html">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="appointments.html">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Appointments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-patient.html">
+                            <i class="fas fa-procedures"></i>
+                            <span>My Patients</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="telemedicine.html">
+                            <i class="fas fa-video"></i>
+                            <span>Telemedicine</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-prescriptions.html">
+                            <i class="fas fa-prescription-bottle-alt"></i>
+                            <span>Prescriptions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-profile.html">
+                            <i class="fas fa-user-md"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-schedule.html">
+                            <i class="fas fa-clock"></i>
+                            <span>Schedule</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="logout.html" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h2>Prescription Management</h2>
+                    <p id="current-date">Monday, June 12, 2023</p>
+                </div>
+                <div class="header-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">2</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Doctor Profile">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Patient Search -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h3>Create New Prescription</h3>
+                </div>
+                
+                <div class="patient-search">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search for patient by name or ID...">
+                    </div>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                
+                <!-- Selected Patient -->
+                <div class="patient-card">
+                    <div class="patient-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Patient Avatar">
+                    </div>
+                    <div class="patient-details">
+                        <h3>Yashwenth Kumar</h3>
+                        <div class="patient-meta">
+                            <div class="patient-meta-item">
+                                <i class="fas fa-id-card"></i>
+                                <span>ID: PT100245</span>
+                            </div>
+                            <div class="patient-meta-item">
+                                <i class="fas fa-birthday-cake"></i>
+                                <span>32 years</span>
+                            </div>
+                            <div class="patient-meta-item">
+                                <i class="fas fa-venus-mars"></i>
+                                <span>Male</span>
+                            </div>
+                        </div>
+                        <div class="patient-actions">
+                            <button class="btn btn-sm btn-outline">
+                                <i class="fas fa-file-medical"></i> View Records
+                            </button>
+                            <button class="btn btn-sm btn-outline">
+                                <i class="fas fa-history"></i> Prescription History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Prescription Form -->
+                <form class="prescription-form">
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="prescription-date">Prescription Date</label>
+                                <input type="date" class="form-control" id="prescription-date" value="2023-06-12">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="valid-until">Valid Until</label>
+                                <input type="date" class="form-control" id="valid-until" value="2023-09-12">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="diagnosis">Diagnosis</label>
+                        <input type="text" class="form-control" id="diagnosis" placeholder="Enter diagnosis...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea class="form-control" id="notes" placeholder="Additional notes for the patient..."></textarea>
+                    </div>
+                    
+                    <h4 style="margin: 20px 0 15px;">Medications</h4>
+                    
+                    <!-- Medication Form -->
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="medication-name">Medication Name</label>
+                                <input type="text" class="form-control" id="medication-name" placeholder="e.g. Metformin">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="dosage">Dosage</label>
+                                <input type="text" class="form-control" id="dosage" placeholder="e.g. 500mg">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="frequency">Frequency</label>
+                                <select class="form-control" id="frequency">
+                                    <option>Once daily</option>
+                                    <option>Twice daily</option>
+                                    <option>Three times daily</option>
+                                    <option>Four times daily</option>
+                                    <option>Every 6 hours</option>
+                                    <option>Every 8 hours</option>
+                                    <option>Every 12 hours</option>
+                                    <option>As needed</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="duration">Duration</label>
+                                <input type="text" class="form-control" id="duration" placeholder="e.g. 30 days">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="instructions">Special Instructions</label>
+                        <textarea class="form-control" id="instructions" placeholder="Any special instructions for this medication..."></textarea>
+                    </div>
+                    
+                    <div class="form-group" style="text-align: right;">
+                        <button type="button" class="btn btn-outline">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Medication
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Medication List -->
+                <div class="medication-list">
+                    <div class="medication-item">
+                        <div class="medication-icon">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <div class="medication-details">
+                            <div class="medication-name">Metformin</div>
+                            <div class="medication-dosage">500mg • Twice daily • 30 days</div>
+                            <div class="medication-instructions">Take with meals to reduce stomach upset</div>
+                        </div>
+                        <div class="medication-actions">
+                            <button class="btn btn-sm btn-outline">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="medication-item">
+                        <div class="medication-icon">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <div class="medication-details">
+                            <div class="medication-name">Lisinopril</div>
+                            <div class="medication-dosage">10mg • Once daily • 30 days</div>
+                            <div class="medication-instructions">Take in the morning</div>
+                        </div>
+                        <div class="medication-actions">
+                            <button class="btn btn-sm btn-outline">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="text-align: right; margin-top: 30px;">
+                    <button type="button" class="btn btn-outline">
+                        <i class="fas fa-times"></i> Discard
+                    </button>
+                    <button type="button" class="btn btn-success">
+                        <i class="fas fa-check"></i> Save Prescription
+                    </button>
+                    <button type="button" class="btn btn-primary">
+                        <i class="fas fa-print"></i> Save & Print
+                    </button>
+                </div>
+            </section>
+            
+            <!-- Recent Prescriptions -->
+            <section class="dashboard-section">
+                <div class="section-header">
+                    <h3>Recent Prescriptions</h3>
+                    <a href="#" class="view-all">View All</a>
+                </div>
+                
+                <div class="prescriptions-list">
+                    <div class="prescription-card">
+                        <div class="prescription-header">
+                            <div class="prescription-date">June 10, 2023</div>
+                            <div class="prescription-status active">Active</div>
+                        </div>
+                        <div class="prescription-patient">
+                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Patient">
+                            <div>
+                                <h4>Sarah Williams</h4>
+                                <p>ID: PT100189 • 28 years</p>
+                            </div>
+                        </div>
+                        <div class="prescription-medications">
+                            <span class="medication-badge">Amoxicillin 500mg</span>
+                            <span class="medication-badge">Ibuprofen 200mg</span>
+                            <span class="medication-badge">+2 more</span>
+                        </div>
+                        <div class="prescription-actions">
+                            <button class="btn btn-sm btn-outline">View</button>
+                            <button class="btn btn-sm btn-primary">Print</button>
+                        </div>
+                    </div>
+                    
+                    <div class="prescription-card">
+                        <div class="prescription-header">
+                            <div class="prescription-date">June 5, 2023</div>
+                            <div class="prescription-status">Completed</div>
+                        </div>
+                        <div class="prescription-patient">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Patient">
+                            <div>
+                                <h4>Robert Chen</h4>
+                                <p>ID: PT100156 • 45 years</p>
+                            </div>
+                        </div>
+                        <div class="prescription-medications">
+                            <span class="medication-badge">Atorvastatin 20mg</span>
+                            <span class="medication-badge">Metformin 500mg</span>
+                        </div>
+                        <div class="prescription-actions">
+                            <button class="btn btn-sm btn-outline">View</button>
+                            <button class="btn btn-sm btn-primary">Print</button>
+                        </div>
+                    </div>
+                    
+                    <div class="prescription-card">
+                        <div class="prescription-header">
+                            <div class="prescription-date">May 28, 2023</div>
+                            <div class="prescription-status expired">Expired</div>
+                        </div>
+                        <div class="prescription-patient">
+                            <img src="https://randomuser.me/api/portraits/women/62.jpg" alt="Patient">
+                            <div>
+                                <h4>Margaret Johnson</h4>
+                                <p>ID: PT100112 • 62 years</p>
+                            </div>
+                        </div>
+                        <div class="prescription-medications">
+                            <span class="medication-badge">Lisinopril 10mg</span>
+                            <span class="medication-badge">Hydrochlorothiazide 25mg</span>
+                        </div>
+                        <div class="prescription-actions">
+                            <button class="btn btn-sm btn-outline">View</button>
+                            <button class="btn btn-sm btn-primary">Print</button>
+                        </div>
+                    </div>
+                    
+                    <div class="prescription-card">
+                        <div class="prescription-header">
+                            <div class="prescription-date">May 20, 2023</div>
+                            <div class="prescription-status">Completed</div>
+                        </div>
+                        <div class="prescription-patient">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Patient">
+                            <div>
+                                <h4>Yashwenth Kumar</h4>
+                                <p>ID: PT100245 • 32 years</p>
+                            </div>
+                        </div>
+                        <div class="prescription-medications">
+                            <span class="medication-badge">Metformin 500mg</span>
+                            <span class="medication-badge">Lisinopril 10mg</span>
+                        </div>
+                        <div class="prescription-actions">
+                            <button class="btn btn-sm btn-outline">View</button>
+                            <button class="btn btn-sm btn-primary">Print</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="assets/js/shared.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script>
+       document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all components
+    initSidebar();
+    updateCurrentDate();
+    initPatientSearch();
+    initPrescriptionForm();
+    initMedicationList();
+    initRecentPrescriptions();
+    initNotifications();
+});
+
+// ==================== CORE FUNCTIONS ====================
+
+function initSidebar() {
+    // Set active nav link
+    const currentPage = window.location.pathname.split('/').pop();
+    document.querySelectorAll('.sidebar-nav li a').forEach(link => {
+        const linkPage = link.getAttribute('href').split('/').pop();
+        if (linkPage === currentPage) {
+            link.parentElement.classList.add('active');
+        }
+    });
+
+    // Mobile sidebar toggle
+    const sidebarToggle = document.createElement('div');
+    sidebarToggle.className = 'sidebar-toggle';
+    sidebarToggle.innerHTML = '<i class="fas fa-bars"></i>';
+    document.querySelector('.top-header').prepend(sidebarToggle);
+    
+    sidebarToggle.addEventListener('click', function() {
+        document.querySelector('.sidebar').classList.toggle('collapsed');
+    });
+}
+
+function updateCurrentDate() {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', options);
+}
+
+// ==================== PATIENT SEARCH FUNCTIONALITY ====================
+
+function initPatientSearch() {
+    const searchInput = document.querySelector('.patient-search input');
+    const searchBtn = document.querySelector('.patient-search .btn');
+    
+    searchBtn.addEventListener('click', function() {
+        const searchTerm = searchInput.value.trim();
+        if (searchTerm) {
+            // In a real app, this would search your patient database
+            console.log("Searching for patient:", searchTerm);
+            showToast(`Searching for "${searchTerm}"`, 'info');
+            
+            // Mock patient data - in a real app this would come from an API
+            const mockPatient = {
+                name: "Yashwenth Kumar",
+                id: "PT100245",
+                age: "32 years",
+                gender: "Male",
+                avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+                lastVisit: "May 20, 2023"
+            };
+            
+            // Update patient card with found patient
+            updatePatientCard(mockPatient);
+        } else {
+            showToast("Please enter a search term", 'error');
+        }
+    });
+}
+
+function updatePatientCard(patient) {
+    const patientCard = document.querySelector('.patient-card');
+    patientCard.querySelector('.patient-avatar img').src = patient.avatar;
+    patientCard.querySelector('.patient-details h3').textContent = patient.name;
+    
+    const metaItems = patientCard.querySelectorAll('.patient-meta-item span');
+    metaItems[0].textContent = `ID: ${patient.id}`;
+    metaItems[1].textContent = patient.age;
+    metaItems[2].textContent = patient.gender;
+    
+    // Show the patient card if it was hidden
+    patientCard.style.display = 'flex';
+}
+
+// ==================== PRESCRIPTION FORM FUNCTIONALITY ====================
+
+function initPrescriptionForm() {
+    // Set default dates
+    const today = new Date();
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(today.getMonth() + 3);
+    
+    document.getElementById('prescription-date').valueAsDate = today;
+    document.getElementById('valid-until').valueAsDate = threeMonthsLater;
+    
+    // Form submission
+    const saveBtn = document.querySelector('.prescription-form .btn-success');
+    const savePrintBtn = document.querySelector('.prescription-form .btn-primary:last-child');
+    const discardBtn = document.querySelector('.prescription-form .btn-outline:last-child');
+    
+    saveBtn.addEventListener('click', function() {
+        if (validatePrescriptionForm()) {
+            savePrescription(false);
+        }
+    });
+    
+    savePrintBtn.addEventListener('click', function() {
+        if (validatePrescriptionForm()) {
+            savePrescription(true);
+        }
+    });
+    
+    discardBtn.addEventListener('click', function() {
+        if (confirm("Discard this prescription?")) {
+            resetPrescriptionForm();
+            showToast("Prescription discarded", 'info');
+        }
+    });
+}
+
+function validatePrescriptionForm() {
+    const diagnosis = document.getElementById('diagnosis').value.trim();
+    const medications = document.querySelectorAll('.medication-item');
+    
+    if (!diagnosis) {
+        showToast("Please enter a diagnosis", 'error');
+        return false;
+    }
+    
+    if (medications.length === 0) {
+        showToast("Please add at least one medication", 'error');
+        return false;
+    }
+    
+    return true;
+}
+
+function savePrescription(shouldPrint) {
+    // Collect prescription data
+    const prescriptionData = {
+        date: document.getElementById('prescription-date').value,
+        validUntil: document.getElementById('valid-until').value,
+        diagnosis: document.getElementById('diagnosis').value,
+        notes: document.getElementById('notes').value,
+        medications: []
+    };
+    
+    // Collect medications
+    document.querySelectorAll('.medication-item').forEach(item => {
+        prescriptionData.medications.push({
+            name: item.querySelector('.medication-name').textContent,
+            dosage: item.querySelector('.medication-dosage').textContent,
+            instructions: item.querySelector('.medication-instructions')?.textContent || ''
+        });
+    });
+    
+    console.log("Saving prescription:", prescriptionData);
+    showToast("Prescription saved successfully!", 'success');
+    
+    if (shouldPrint) {
+        setTimeout(() => {
+            showToast("Opening print preview...", 'info');
+            // In a real app, this would open the print dialog
+        }, 1000);
+    }
+    
+    // Reset form after saving
+    setTimeout(() => {
+        resetPrescriptionForm();
+        // Add to recent prescriptions
+        addToRecentPrescriptions(prescriptionData);
+    }, 1500);
+}
+
+function resetPrescriptionForm() {
+    document.getElementById('diagnosis').value = '';
+    document.getElementById('notes').value = '';
+    document.querySelectorAll('.medication-item').forEach(item => item.remove());
+    
+    // Reset dates to defaults
+    const today = new Date();
+    const threeMonthsLater = new Date();
+    threeMonthsLater.setMonth(today.getMonth() + 3);
+    
+    document.getElementById('prescription-date').valueAsDate = today;
+    document.getElementById('valid-until').valueAsDate = threeMonthsLater;
+}
+
+// ==================== MEDICATION LIST FUNCTIONALITY ====================
+
+function initMedicationList() {
+    const addMedBtn = document.querySelector('.prescription-form .btn-primary');
+    const medicationName = document.getElementById('medication-name');
+    const dosage = document.getElementById('dosage');
+    const frequency = document.getElementById('frequency');
+    const duration = document.getElementById('duration');
+    const instructions = document.getElementById('instructions');
+    
+    addMedBtn.addEventListener('click', function() {
+        if (!medicationName.value.trim()) {
+            showToast("Please enter a medication name", 'error');
+            return;
+        }
+        
+        if (!dosage.value.trim()) {
+            showToast("Please enter a dosage", 'error');
+            return;
+        }
+        
+        if (!duration.value.trim()) {
+            showToast("Please enter a duration", 'error');
+            return;
+        }
+        
+        addMedicationToList({
+            name: medicationName.value.trim(),
+            dosage: dosage.value.trim(),
+            frequency: frequency.value,
+            duration: duration.value.trim(),
+            instructions: instructions.value.trim()
+        });
+        
+        // Clear the form
+        medicationName.value = '';
+        dosage.value = '';
+        duration.value = '';
+        instructions.value = '';
+        frequency.selectedIndex = 0;
+        
+        // Focus back on medication name
+        medicationName.focus();
+    });
+    
+    // Handle Enter key in medication name field
+    medicationName.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addMedBtn.click();
+        }
+    });
+}
+
+function addMedicationToList(medication) {
+    const medicationList = document.querySelector('.medication-list');
+    
+    const medicationItem = document.createElement('div');
+    medicationItem.className = 'medication-item';
+    medicationItem.innerHTML = `
+        <div class="medication-icon">
+            <i class="fas fa-pills"></i>
+        </div>
+        <div class="medication-details">
+            <div class="medication-name">${medication.name}</div>
+            <div class="medication-dosage">${medication.dosage} • ${medication.frequency} • ${medication.duration}</div>
+            ${medication.instructions ? `<div class="medication-instructions">${medication.instructions}</div>` : ''}
+        </div>
+        <div class="medication-actions">
+            <button class="btn btn-sm btn-outline edit-med">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger delete-med">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    
+    medicationList.appendChild(medicationItem);
+    
+    // Add event listeners to the new buttons
+    medicationItem.querySelector('.delete-med').addEventListener('click', function() {
+        medicationItem.remove();
+        showToast("Medication removed", 'info');
+    });
+    
+    medicationItem.querySelector('.edit-med').addEventListener('click', function() {
+        // In a real app, this would populate the form for editing
+        showToast("Edit functionality would go here", 'info');
+    });
+}
+
+// ==================== RECENT PRESCRIPTIONS FUNCTIONALITY ====================
+
+function initRecentPrescriptions() {
+    // In a real app, this would load from your database
+    const mockPrescriptions = [
+        {
+            date: "June 10, 2023",
+            status: "active",
+            patient: {
+                name: "Sarah Williams",
+                id: "PT100189",
+                age: "28 years",
+                avatar: "https://randomuser.me/api/portraits/women/28.jpg"
+            },
+            medications: ["Amoxicillin 500mg", "Ibuprofen 200mg", "Paracetamol 500mg", "Vitamin D 1000IU"]
+        },
+        {
+            date: "June 5, 2023",
+            status: "completed",
+            patient: {
+                name: "Robert Chen",
+                id: "PT100156",
+                age: "45 years",
+                avatar: "https://randomuser.me/api/portraits/men/45.jpg"
+            },
+            medications: ["Atorvastatin 20mg", "Metformin 500mg"]
+        },
+        {
+            date: "May 28, 2023",
+            status: "expired",
+            patient: {
+                name: "Margaret Johnson",
+                id: "PT100112",
+                age: "62 years",
+                avatar: "https://randomuser.me/api/portraits/women/62.jpg"
+            },
+            medications: ["Lisinopril 10mg", "Hydrochlorothiazide 25mg"]
+        },
+        {
+            date: "May 20, 2023",
+            status: "completed",
+            patient: {
+                name: "Yashwenth Kumar",
+                id: "PT100245",
+                age: "32 years",
+                avatar: "https://randomuser.me/api/portraits/men/32.jpg"
+            },
+            medications: ["Metformin 500mg", "Lisinopril 10mg"]
+        }
+    ];
+    
+    // Populate recent prescriptions
+    mockPrescriptions.forEach(prescription => {
+        addToRecentPrescriptions(prescription);
+    });
+    
+    // Add event listeners to view/print buttons
+    document.querySelectorAll('.prescription-actions button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const prescriptionCard = this.closest('.prescription-card');
+            const patientName = prescriptionCard.querySelector('h4').textContent;
+            
+            if (this.textContent.includes('View')) {
+                showToast(`Viewing prescription for ${patientName}`, 'info');
+            } else {
+                showToast(`Printing prescription for ${patientName}`, 'info');
+            }
+        });
+    });
+}
+
+function addToRecentPrescriptions(prescription) {
+    const prescriptionsList = document.querySelector('.prescriptions-list');
+    
+    // Create status badge
+    let statusClass = '';
+    let statusText = '';
+    if (prescription.status === 'active') {
+        statusClass = 'active';
+        statusText = 'Active';
+    } else if (prescription.status === 'expired') {
+        statusClass = 'expired';
+        statusText = 'Expired';
+    } else {
+        statusText = 'Completed';
+    }
+    
+    // Create medication badges (show max 3)
+    const medsToShow = prescription.medications.slice(0, 3);
+    const remainingMeds = prescription.medications.length - 3;
+    
+    const medicationBadges = medsToShow.map(med => 
+        `<span class="medication-badge">${med}</span>`
+    ).join('');
+    
+    const remainingBadge = remainingMeds > 0 ? 
+        `<span class="medication-badge">+${remainingMeds} more</span>` : '';
+    
+    // Create the prescription card
+    const prescriptionCard = document.createElement('div');
+    prescriptionCard.className = 'prescription-card';
+    prescriptionCard.innerHTML = `
+        <div class="prescription-header">
+            <div class="prescription-date">${prescription.date}</div>
+            <div class="prescription-status ${statusClass}">${statusText}</div>
+        </div>
+        <div class="prescription-patient">
+            <img src="${prescription.patient.avatar}" alt="Patient">
+            <div>
+                <h4>${prescription.patient.name}</h4>
+                <p>ID: ${prescription.patient.id} • ${prescription.patient.age}</p>
+            </div>
+        </div>
+        <div class="prescription-medications">
+            ${medicationBadges}
+            ${remainingBadge}
+        </div>
+        <div class="prescription-actions">
+            <button class="btn btn-sm btn-outline">View</button>
+            <button class="btn btn-sm btn-primary">Print</button>
+        </div>
+    `;
+    
+    // Add to the beginning of the list
+    prescriptionsList.insertBefore(prescriptionCard, prescriptionsList.firstChild);
+    
+    // Limit to 6 prescriptions
+    if (prescriptionsList.children.length > 6) {
+        prescriptionsList.removeChild(prescriptionsList.lastChild);
+    }
+}
+
+// ==================== NOTIFICATIONS FUNCTIONALITY ====================
+
+function initNotifications() {
+    const notificationsBtn = document.querySelector('.notifications');
+    
+    notificationsBtn.addEventListener('click', function() {
+        showToast("You have 2 unread notifications", 'info');
+        // In a real app, this would show a dropdown with notifications
+    });
+}
+
+// ==================== TOAST NOTIFICATIONS ====================
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification show ${type}`;
+    toast.innerHTML = `
+        <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 
+                         type === 'success' ? 'fa-check-circle' : 'fa-info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Add toast styles if not already present
+if (!document.getElementById('toast-styles')) {
+    const toastStyles = document.createElement('style');
+    toastStyles.id = 'toast-styles';
+    toastStyles.textContent = `
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast-notification.show {
+            opacity: 1;
+        }
+        .toast-notification.success {
+            background: var(--success-color);
+        }
+        .toast-notification.error {
+            background: var(--danger-color);
+        }
+        .toast-notification.info {
+            background: var(--primary-color);
+        }
+    `;
+    document.head.appendChild(toastStyles);
+}
+    </script>
+</body>
+</html>

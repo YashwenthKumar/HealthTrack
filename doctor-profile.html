@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthTrack Pro - Doctor Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/scrollbar.css">
+    <style>
+        :root {
+            --primary-color: #2a7fba;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .text-primary { color: var(--primary-color); }
+        .text-success { color: var(--success-color); }
+        .text-warning { color: var(--warning-color); }
+        .text-danger { color: var(--danger-color); }
+        
+        .dashboard-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 240px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .sidebar-nav ul {
+            list-style: none;
+            padding: 15px 0;
+        }
+        
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-nav li a:hover, .sidebar-nav li.active a {
+            background: #f0f7ff;
+            color: var(--primary-color);
+        }
+        
+        .sidebar-nav li a i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #555;
+            text-decoration: none;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            width: 100%;
+        }
+        
+        /* Header Styles */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .header-left h2 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        #current-date {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .notifications {
+            position: relative;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .notifications .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .user-profile img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid var(--primary-color);
+        }
+        
+        /* Profile Content */
+        .profile-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .profile-sidebar {
+            width: 300px;
+            flex-shrink: 0;
+        }
+        
+        .profile-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+        }
+        
+        .profile-avatar .edit-btn {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+        
+        .profile-name {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .profile-title {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .profile-meta {
+            margin: 20px 0;
+        }
+        
+        .profile-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        
+        .profile-meta-item i {
+            color: var(--primary-color);
+            width: 20px;
+            text-align: center;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .profile-main {
+            flex: 1;
+        }
+        
+        /* Full Width Sections */
+        .full-width-section {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin: 25px 0;
+            width: calc(100% + 20px);
+            margin-left: -20px;
+        }
+        
+        /* Dashboard Sections */
+        .dashboard-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .section-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .view-all {
+            font-size: 14px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        /* About Section */
+        .about-content p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .specialties {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .specialty-badge {
+            background: #e1f0ff;
+            color: var(--primary-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        
+        /* Education & Experience */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #eee;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 25px;
+            max-width: 100%;
+        }
+        
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 5px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 3px solid white;
+        }
+        
+        .timeline-date {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+        
+        .timeline-subtitle {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .timeline-content {
+            font-size: 14px;
+            line-height: 1.6;
+            max-width: 100%;
+        }
+        
+        /* Availability */
+        .availability-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .availability-table th, 
+        .availability-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .availability-table th {
+            font-weight: 500;
+            color: #666;
+            background: #f9f9f9;
+        }
+        
+        .availability-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        
+        .status-available {
+            background: #d4edda;
+            color: var(--success-color);
+        }
+        
+        .status-unavailable {
+            background: #f8d7da;
+            color: var(--danger-color);
+        }
+        
+        /* Reviews */
+        .review-item {
+            display: flex;
+            gap: 15px;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .review-item:last-child {
+            border-bottom: none;
+        }
+        
+        .review-avatar img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .review-content {
+            flex: 1;
+            max-width: calc(100% - 65px);
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .review-author {
+            font-weight: 600;
+        }
+        
+        .review-date {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .review-rating {
+            color: var(--warning-color);
+            margin-bottom: 8px;
+        }
+        
+        .review-text {
+            line-height: 1.5;
+            max-width: 100%;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #236fa3;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #ddd;
+            color: #666;
+        }
+        
+        .btn-outline:hover {
+            background: #f5f5f5;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .profile-container {
+                flex-direction: column;
+            }
+            
+            .profile-sidebar {
+                width: 100%;
+            }
+            
+            .full-width-section {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-layout {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .sidebar-nav ul {
+                display: flex;
+                padding: 0;
+            }
+            
+            .sidebar-nav li a {
+                padding: 15px 12px;
+                white-space: nowrap;
+            }
+            
+            .sidebar-header, .sidebar-footer {
+                display: none;
+            }
+            
+            .top-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .availability-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .full-width-section {
+                padding: 15px;
+            }
+            
+            .review-item {
+                flex-direction: column;
+            }
+            
+            .review-content {
+                max-width: 100%;
+            }
+        }
+    /* Add these styles to your existing CSS */
+    .dashboard-layout {
+        position: relative;
+    }
+    
+    .sidebar {
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto; /* Enable scrolling if content exceeds viewport height */
+        z-index: 100; /* Ensure sidebar stays above other content */
+    }
+    
+    .main-content {
+        margin-left: 240px; /* Match the width of your sidebar */
+        width: calc(100% - 240px); /* Adjust width to account for fixed sidebar */
+        overflow-x: hidden;
+    }
+    
+    /* For responsive adjustments */
+    @media (max-width: 992px) {
+        .sidebar {
+            width: 60px;
+        }
+        .main-content {
+            margin-left: 60px;
+            width: calc(100% - 60px);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar {
+            position: static;
+            width: 100%;
+            height: auto;
+        }
+        .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h1>HealthTrack</h1>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="doctor-dashboard.html">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="appointments.html">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Appointments</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-patient.html">
+                            <i class="fas fa-procedures"></i>
+                            <span>My Patients</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="telemedicine.html">
+                            <i class="fas fa-video"></i>
+                            <span>Telemedicine</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-prescriptions.html">
+                            <i class="fas fa-prescription-bottle-alt"></i>
+                            <span>Prescriptions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-profile.html">
+                            <i class="fas fa-user-md"></i>
+                            <span>My Profile</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="doctor-schedule.html">
+                            <i class="fas fa-clock"></i>
+                            <span>Schedule</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="logout.html" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h2>My Profile</h2>
+                    <p id="current-date">Monday, June 12, 2023</p>
+                </div>
+                <div class="header-right">
+                    <div class="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">2</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Doctor Profile">
+                    </div>
+                </div>
+            </header>
+
+            <!-- Profile Content -->
+            <div class="profile-container">
+                <!-- Profile Sidebar -->
+                <div class="profile-sidebar">
+                    <div class="profile-card">
+                        <div class="profile-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Doctor Avatar">
+                            <div class="edit-btn">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <h2 class="profile-name">Dr. Sarah Johnson</h2>
+                        <div class="profile-title">Cardiologist</div>
+                        
+                        <div class="profile-meta">
+                            <div class="profile-meta-item">
+                                <i class="fas fa-briefcase-medical"></i>
+                                <span>12 years experience</span>
+                            </div>
+                            <div class="profile-meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>New York, USA</span>
+                            </div>
+                            <div class="profile-meta-item">
+                                <i class="fas fa-envelope"></i>
+                                <span>sarah.johnson@example.com</span>
+                            </div>
+                            <div class="profile-meta-item">
+                                <i class="fas fa-phone-alt"></i>
+                                <span>+1 (555) 123-4567</span>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-value">1,245</div>
+                                <div class="stat-label">Patients</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">4.9</div>
+                                <div class="stat-label">Rating</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-edit"></i> Edit Profile
+                        </button>
+                    </div>
+                    
+                    <div class="dashboard-section">
+                        <h3 style="margin-bottom: 15px;">Quick Links</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <a href="#" class="btn btn-outline" style="text-align: left;">
+                                <i class="fas fa-calendar-plus"></i> Update Availability
+                            </a>
+                            <a href="#" class="btn btn-outline" style="text-align: left;">
+                                <i class="fas fa-certificate"></i> Add Certification
+                            </a>
+                            <a href="#" class="btn btn-outline" style="text-align: left;">
+                                <i class="fas fa-lock"></i> Change Password
+                            </a>
+                            <a href="#" class="btn btn-outline" style="text-align: left;">
+                                <i class="fas fa-bell"></i> Notification Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Main Content -->
+                <div class="profile-main">
+                    <!-- About Section -->
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h3>About Me</h3>
+                            <button class="btn btn-sm btn-outline">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </div>
+                        <div class="about-content">
+                            <p>Board-certified cardiologist with over 12 years of experience in diagnosing and treating cardiovascular diseases. Specialized in interventional cardiology with a focus on minimally invasive procedures.</p>
+                            <p>Committed to providing personalized care to each patient, combining evidence-based medicine with a compassionate approach. Passionate about preventive cardiology and patient education.</p>
+                            
+                            <div class="specialties">
+                                <span class="specialty-badge">Interventional Cardiology</span>
+                                <span class="specialty-badge">Preventive Cardiology</span>
+                                <span class="specialty-badge">Heart Failure</span>
+                                <span class="specialty-badge">Hypertension</span>
+                                <span class="specialty-badge">Arrhythmias</span>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Education Section -->
+                    <section class="dashboard-section">
+                        <div class="section-header">
+                            <h3>Education</h3>
+                            <button class="btn btn-sm btn-outline">
+                                <i class="fas fa-plus"></i> Add
+                            </button>
+                        </div>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-date">2010 - 2013</div>
+                                <h4 class="timeline-title">Fellowship in Interventional Cardiology</h4>
+                                <div class="timeline-subtitle">Johns Hopkins Hospital, Baltimore</div>
+                                <div class="timeline-content">
+                                    Specialized training in coronary interventions, structural heart disease, and peripheral vascular interventions.
+                                </div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-date">2007 - 2010</div>
+                                <h4 class="timeline-title">Residency in Internal Medicine</h4>
+                                <div class="timeline-subtitle">Massachusetts General Hospital, Boston</div>
+                            </div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-date">2003 - 2007</div>
+                                <h4 class="timeline-title">Doctor of Medicine (MD)</h4>
+                                <div class="timeline-subtitle">Harvard Medical School</div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            
+            <!-- Full Width Sections Below -->
+            <!-- Work Experience Section -->
+            <section class="full-width-section">
+                <div class="section-header">
+                    <h3>Work Experience</h3>
+                    <button class="btn btn-sm btn-outline">
+                        <i class="fas fa-plus"></i> Add
+                    </button>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">2018 - Present</div>
+                        <h4 class="timeline-title">Senior Cardiologist</h4>
+                        <div class="timeline-subtitle">New York Heart Center</div>
+                        <div class="timeline-content">
+                            <p>Lead interventional cardiologist performing complex coronary interventions. Director of the Cardiac Catheterization Lab. Responsibilities include:</p>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                <li>Performing diagnostic and interventional cardiac procedures including angioplasty, stenting, and structural heart interventions</li>
+                                <li>Supervising and training fellows and junior staff in advanced cardiac techniques</li>
+                                <li>Developing and implementing new treatment protocols that reduced complication rates by 25%</li>
+                                <li>Participating in clinical research trials with focus on novel stent technologies</li>
+                                <li>Leading quality improvement initiatives that improved patient satisfaction scores by 30%</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">2013 - 2018</div>
+                        <h4 class="timeline-title">Cardiologist</h4>
+                        <div class="timeline-subtitle">Boston Cardiovascular Associates</div>
+                        <div class="timeline-content">
+                            <p>General and interventional cardiology practice with focus on coronary artery disease and structural heart disease. Key achievements:</p>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                <li>Established the practice's structural heart program which became a regional referral center</li>
+                                <li>Reduced patient wait times by 40% through process improvements and scheduling optimization</li>
+                                <li>Implemented a successful heart failure management program that reduced readmissions by 35%</li>
+                                <li>Recognized as "Top Cardiologist" by Boston Magazine for 3 consecutive years (2015-2017)</li>
+                                <li>Published 12 peer-reviewed articles on interventional cardiology techniques</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-date">2010 - 2013</div>
+                        <h4 class="timeline-title">Cardiology Fellow</h4>
+                        <div class="timeline-subtitle">Johns Hopkins Hospital</div>
+                        <div class="timeline-content">
+                            <p>Completed advanced fellowship training in interventional cardiology with focus on complex coronary interventions and structural heart disease.</p>
+                            <ul style="margin-top: 10px; padding-left: 20px;">
+                                <li>Performed over 500 interventional procedures under supervision</li>
+                                <li>Participated in groundbreaking research on drug-eluting stents</li>
+                                <li>Received the "Outstanding Fellow" award in 2012</li>
+                                <li>Presented research findings at 5 national conferences</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Availability Section -->
+            <section class="full-width-section">
+                <div class="section-header">
+                    <h3>Weekly Availability</h3>
+                    <button class="btn btn-sm btn-outline">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="availability-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width: 100px;">Day</th>
+                                <th style="min-width: 180px;">Morning (8AM-12PM)</th>
+                                <th style="min-width: 180px;">Afternoon (1PM-5PM)</th>
+                                <th style="min-width: 180px;">Evening (6PM-9PM)</th>
+                                <th style="min-width: 250px;">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Monday</td>
+                                <td><span class="availability-status status-available">Available</span> (Procedures)</td>
+                                <td><span class="availability-status status-available">Available</span> (Clinic)</td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td>Morning procedures at hospital, afternoon clinic at office</td>
+                            </tr>
+                            <tr>
+                                <td>Tuesday</td>
+                                <td><span class="availability-status status-available">Available</span> (Clinic)</td>
+                                <td><span class="availability-status status-available">Available</span> (Clinic)</td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td>Full day clinic appointments, new patient consultations</td>
+                            </tr>
+                            <tr>
+                                <td>Wednesday</td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td><span class="availability-status status-available">Available</span> (Telehealth)</td>
+                                <td><span class="availability-status status-available">Available</span> (Telehealth)</td>
+                                <td>Research meetings in AM, Evening telehealth appointments only</td>
+                            </tr>
+                            <tr>
+                                <td>Thursday</td>
+                                <td><span class="availability-status status-available">Available</span> (Procedures)</td>
+                                <td><span class="availability-status status-available">Available</span> (Clinic)</td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td>Morning procedures at hospital, afternoon follow-up visits</td>
+                            </tr>
+                            <tr>
+                                <td>Friday</td>
+                                <td><span class="availability-status status-available">Available</span> (Procedures)</td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td>Morning procedures only, administrative time in afternoon</td>
+                            </tr>
+                            <tr>
+                                <td>Saturday</td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td>Weekend off (emergency call only)</td>
+                            </tr>
+                            <tr>
+                                <td>Sunday</td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td><span class="availability-status status-unavailable">Unavailable</span></td>
+                                <td>Weekend off (emergency call only)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Reviews Section -->
+            <section class="full-width-section">
+                <div class="section-header">
+                    <h3>Patient Reviews</h3>
+                    <a href="#" class="view-all">View All 124 Reviews</a>
+                </div>
+                <div class="reviews-list">
+                    <div class="review-item">
+                        <div class="review-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Patient">
+                        </div>
+                        <div class="review-content">
+                            <div class="review-header">
+                                <div class="review-author">Yashwenth Kumar</div>
+                                <div class="review-date">June 10, 2023</div>
+                            </div>
+                            <div class="review-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="review-text">
+                                Dr. Johnson is an exceptional cardiologist who literally saved my life. I came to her with severe chest pain and she immediately recognized the seriousness of my condition. She performed an emergency angioplasty that cleared a 90% blockage in my LAD artery (the "widowmaker"). Her skill in the cath lab is matched only by her compassionate bedside manner. She took the time to explain every detail of my condition and treatment options in terms I could understand. The entire staff at her practice is professional and caring. Six months after my procedure, I'm back to running marathons thanks to her expertise. I would recommend Dr. Johnson to anyone needing cardiac care without hesitation.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-item">
+                        <div class="review-avatar">
+                            <img src="https://randomuser.me/api/portraits/women/28.jpg" alt="Patient">
+                        </div>
+                        <div class="review-content">
+                            <div class="review-header">
+                                <div class="review-author">Sarah Williams</div>
+                                <div class="review-date">May 28, 2023</div>
+                            </div>
+                            <div class="review-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="review-text">
+                                I've been seeing Dr. Johnson for my heart condition for over 5 years and she's transformed my quality of life. When I first came to her, I could barely walk up a flight of stairs without getting winded. Through careful medication management and lifestyle recommendations, she's helped me regain my energy and vitality. What sets Dr. Johnson apart is how she truly listens to my concerns and explains everything in clear terms. She never rushes through appointments, even when I know she's busy. Her office runs like clockwork - I rarely wait more than 5 minutes for my scheduled appointments. The nursing staff is wonderful and clearly respects Dr. Johnson's leadership. I trust her completely with my cardiac care and have referred several friends who have been equally impressed.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="review-item">
+                        <div class="review-avatar">
+                            <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Patient">
+                        </div>
+                        <div class="review-content">
+                            <div class="review-header">
+                                <div class="review-author">Robert Chen</div>
+                                <div class="review-date">May 15, 2023</div>
+                            </div>
+                            <div class="review-rating">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <div class="review-text">
+                                Dr. Johnson performed my angioplasty last month and the results have been life-changing. After years of progressive shortness of breath and chest discomfort, I can now breathe easily and have energy I haven't had in years. What impressed me most was how Dr. Johnson called me personally the evening after my procedure to check on me - something I've never experienced with other doctors. Her technical skill is evident in how smooth my recovery has been, with minimal discomfort. The nursing staff at the hospital all spoke highly of her work, which reassured me before the procedure. My only very minor complaint is that it can sometimes take a day or two to get a callback from her office for non-urgent matters, but when it's important, they respond immediately. Overall, an outstanding physician who I would recommend to anyone with heart concerns.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="assets/js/shared.js"></script>
+    <script src="assets/js/sidebar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ==================== UTILITY FUNCTIONS ====================
+            function showSuccessToast(message) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+                Toast.fire({
+                    icon: 'success',
+                    title: message
+                })
+            }
+
+            function showErrorToast(message) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                })
+                Toast.fire({
+                    icon: 'error',
+                    title: message
+                })
+            }
+
+            function formatDate(date) {
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('en-US', options);
+            }
+
+            // ==================== INITIAL SETUP ====================
+            // Set current date
+            document.getElementById('current-date').textContent = formatDate(new Date());
+
+            // ==================== PROFILE IMAGE FUNCTIONALITY ====================
+            const editBtn = document.querySelector('.profile-avatar .edit-btn');
+            const profileImg = document.querySelector('.profile-avatar img');
+            const userProfileImg = document.querySelector('.user-profile img');
+            
+            editBtn.addEventListener('click', async function() {
+                const { value: file } = await Swal.fire({
+                    title: 'Upload profile picture',
+                    input: 'file',
+                    inputAttributes: {
+                        'accept': 'image/*',
+                        'aria-label': 'Upload your profile picture'
+                    }
+                });
+                
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        profileImg.src = e.target.result;
+                        userProfileImg.src = e.target.result;
+                        showSuccessToast('Profile picture updated successfully!');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // ==================== NOTIFICATIONS FUNCTIONALITY ====================
+            const notificationBell = document.querySelector('.notifications');
+            const notificationBadge = document.querySelector('.notifications .badge');
+            
+            // Sample notifications data
+            const notifications = [
+                {
+                    id: 1,
+                    title: "New appointment request",
+                    message: "John Doe requested an appointment for June 15",
+                    time: "10 mins ago",
+                    read: false
+                },
+                {
+                    id: 2,
+                    title: "Patient message",
+                    message: "Sarah Williams sent you a new message",
+                    time: "2 hours ago",
+                    read: false
+                },
+                {
+                    id: 3,
+                    title: "System update",
+                    message: "New features available in your dashboard",
+                    time: "1 day ago",
+                    read: true
+                }
+            ];
+
+            notificationBell.addEventListener('click', function() {
+                // Mark all as read
+                notifications.forEach(notif => notif.read = true);
+                notificationBadge.style.display = 'none';
+                
+                // Create notification dropdown HTML
+                let notificationsHTML = notifications.map(notif => `
+                    <div class="notification-item ${notif.read ? 'read' : 'unread'}">
+                        <div class="notification-title">${notif.title}</div>
+                        <div class="notification-message">${notif.message}</div>
+                        <div class="notification-time">${notif.time}</div>
+                    </div>
+                `).join('');
+                
+                Swal.fire({
+                    title: 'Notifications',
+                    html: `<div class="notifications-container">${notificationsHTML}</div>`,
+                    showConfirmButton: false,
+                    width: '400px',
+                    customClass: {
+                        popup: 'notifications-popup'
+                    }
+                });
+            });
+
+            // Update badge count
+            const unreadCount = notifications.filter(n => !n.read).length;
+            if (unreadCount > 0) {
+                notificationBadge.textContent = unreadCount;
+            } else {
+                notificationBadge.style.display = 'none';
+            }
+
+            // ==================== EDIT PROFILE BUTTON ====================
+            const editProfileBtn = document.querySelector('.profile-card .btn-primary');
+            editProfileBtn.addEventListener('click', function() {
+                Swal.fire({
+                    title: 'Edit Profile',
+                    html: `
+                        <form id="edit-profile-form" class="edit-form">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" value="Dr. Sarah Johnson" class="swal2-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Specialization</label>
+                                <input type="text" value="Cardiologist" class="swal2-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Years of Experience</label>
+                                <input type="number" value="12" class="swal2-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Location</label>
+                                <input type="text" value="New York, USA" class="swal2-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" value="sarah.johnson@example.com" class="swal2-input">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" value="+1 (555) 123-4567" class="swal2-input">
+                            </div>
+                        </form>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Save Changes',
+                    cancelButtonText: 'Cancel',
+                    focusConfirm: false,
+                    preConfirm: () => {
+                        // In a real app, you would collect form data here
+                        return true;
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        showSuccessToast('Profile updated successfully!');
+                    }
+                });
+            });
+
+            // ==================== QUICK LINKS FUNCTIONALITY ====================
+            const quickLinks = document.querySelectorAll('.profile-sidebar .btn-outline');
+            
+            quickLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const linkText = this.textContent.trim();
+                    
+                    if (linkText.includes('Update Availability')) {
+                        Swal.fire({
+                            title: 'Update Availability',
+                            html: `
+                                <p>Select your available time slots for the week:</p>
+                                <div class="availability-form">
+                                    <div class="day-availability">
+                                        <label>Monday</label>
+                                        <select class="swal2-select">
+                                            <option>Morning (8AM-12PM)</option>
+                                            <option>Afternoon (1PM-5PM)</option>
+                                            <option>Evening (6PM-9PM)</option>
+                                            <option>Unavailable</option>
+                                        </select>
+                                    </div>
+                                    <!-- Repeat for other days in a real app -->
+                                </div>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Save Availability',
+                            width: '600px'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                showSuccessToast('Availability updated successfully!');
+                            }
+                        });
+                    }
+                    else if (linkText.includes('Add Certification')) {
+                        Swal.fire({
+                            title: 'Add Certification',
+                            html: `
+                                <form class="certification-form">
+                                    <div class="form-group">
+                                        <label>Certification Name</label>
+                                        <input type="text" class="swal2-input" placeholder="e.g. Board Certified Cardiologist">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Issuing Organization</label>
+                                        <input type="text" class="swal2-input" placeholder="e.g. American Board of Internal Medicine">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Issue Date</label>
+                                        <input type="date" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Expiration Date (if applicable)</label>
+                                        <input type="date" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Upload Certificate</label>
+                                        <input type="file" class="swal2-input">
+                                    </div>
+                                </form>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Add Certification',
+                            width: '600px'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                showSuccessToast('Certification added successfully!');
+                            }
+                        });
+                    }
+                    else if (linkText.includes('Change Password')) {
+                        Swal.fire({
+                            title: 'Change Password',
+                            html: `
+                                <form class="password-form">
+                                    <div class="form-group">
+                                        <label>Current Password</label>
+                                        <input type="password" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>New Password</label>
+                                        <input type="password" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Confirm New Password</label>
+                                        <input type="password" class="swal2-input">
+                                    </div>
+                                </form>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Update Password',
+                            preConfirm: () => {
+                                // Add password validation logic here
+                                return true;
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                showSuccessToast('Password changed successfully!');
+                            }
+                        });
+                    }
+                    else if (linkText.includes('Notification Settings')) {
+                        Swal.fire({
+                            title: 'Notification Settings',
+                            html: `
+                                <form class="notification-settings-form">
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox" checked> Email Notifications
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox" checked> SMS Notifications
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox" checked> Appointment Reminders
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox" checked> New Message Alerts
+                                        </label>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>
+                                            <input type="checkbox"> Promotional Offers
+                                        </label>
+                                    </div>
+                                </form>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Save Settings',
+                            width: '500px'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                showSuccessToast('Notification settings updated!');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // ==================== SECTION EDIT BUTTONS ====================
+            const sectionEditButtons = document.querySelectorAll('.dashboard-section .btn-outline, .full-width-section .btn-outline');
+            
+            sectionEditButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const section = this.closest('.dashboard-section, .full-width-section');
+                    const sectionTitle = section.querySelector('h3').textContent;
+                    
+                    if (sectionTitle.includes('About Me')) {
+                        Swal.fire({
+                            title: 'Edit About Me',
+                            html: `
+                                <textarea class="swal2-textarea" style="height: 200px;">
+Board-certified cardiologist with over 12 years of experience in diagnosing and treating cardiovascular diseases. Specialized in interventional cardiology with a focus on minimally invasive procedures.
+
+Committed to providing personalized care to each patient, combining evidence-based medicine with a compassionate approach. Passionate about preventive cardiology and patient education.
+                                </textarea>
+                                <div class="specialties-edit">
+                                    <label>Specialties (comma separated)</label>
+                                    <input type="text" value="Interventional Cardiology, Preventive Cardiology, Heart Failure, Hypertension, Arrhythmias" class="swal2-input">
+                                </div>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Save Changes',
+                            width: '700px',
+                            preConfirm: () => {
+                                // Handle form data here
+                                return true;
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                showSuccessToast('About section updated successfully!');
+                            }
+                        });
+                    }
+                    else if (sectionTitle.includes('Education')) {
+                        Swal.fire({
+                            title: 'Add Education',
+                            html: `
+                                <form class="education-form">
+                                    <div class="form-group">
+                                        <label>Degree/Program</label>
+                                        <input type="text" placeholder="e.g. Fellowship in Interventional Cardiology" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Institution</label>
+                                        <input type="text" placeholder="e.g. Johns Hopkins Hospital" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Start Year</label>
+                                        <input type="number" placeholder="e.g. 2010" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>End Year (or expected)</label>
+                                        <input type="number" placeholder="e.g. 2013" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description (optional)</label>
+                                        <textarea class="swal2-textarea" placeholder="Specialized training in..."></textarea>
+                                    </div>
+                                </form>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Add Education',
+                            width: '600px'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                showSuccessToast('Education added successfully!');
+                            }
+                        });
+                    }
+                    else if (sectionTitle.includes('Work Experience')) {
+                        Swal.fire({
+                            title: 'Add Work Experience',
+                            html: `
+                                <form class="experience-form">
+                                    <div class="form-group">
+                                        <label>Job Title</label>
+                                        <input type="text" placeholder="e.g. Senior Cardiologist" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Organization</label>
+                                        <input type="text" placeholder="e.g. New York Heart Center" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Start Date</label>
+                                        <input type="date" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>End Date (leave empty if current)</label>
+                                        <input type="date" class="swal2-input">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Responsibilities (bullet points, one per line)</label>
+                                        <textarea class="swal2-textarea" placeholder="• Performed diagnostic and interventional cardiac procedures\n• Supervised and trained fellows and junior staff\n• Developed and implemented new treatment protocols"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Achievements (optional)</label>
+                                        <textarea class="swal2-textarea" placeholder="• Reduced patient wait times by 40%\n• Recognized as 'Top Cardiologist'"></textarea>
+                                    </div>
+                                </form>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Add Experience',
+                            width: '700px'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                showSuccessToast('Work experience added successfully!');
+                            }
+                        });
+                    }
+                    else if (sectionTitle.includes('Weekly Availability')) {
+                        // This would show a more comprehensive availability editor
+                        Swal.fire({
+                            title: 'Edit Weekly Availability',
+                            html: `
+                                <p>Select your available time slots for each day:</p>
+                                <div class="availability-editor">
+                                    <table class="availability-edit-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Day</th>
+                                                <th>Morning (8AM-12PM)</th>
+                                                <th>Afternoon (1PM-5PM)</th>
+                                                <th>Evening (6PM-9PM)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => `
+                                                <tr>
+                                                    <td>${day}</td>
+                                                    <td>
+                                                        <select class="swal2-select">
+                                                            <option value="available">Available</option>
+                                                            <option value="unavailable">Unavailable</option>
+                                                            <option value="procedures">Procedures</option>
+                                                            <option value="clinic">Clinic</option>
+                                                            <option value="telehealth">Telehealth</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <select class="swal2-select">
+                                                            <option value="available">Available</option>
+                                                            <option value="unavailable">Unavailable</option>
+                                                            <option value="procedures">Procedures</option>
+                                                            <option value="clinic">Clinic</option>
+                                                            <option value="telehealth">Telehealth</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>
+                                                        <select class="swal2-select">
+                                                            <option value="available">Available</option>
+                                                            <option value="unavailable">Unavailable</option>
+                                                            <option value="procedures">Procedures</option>
+                                                            <option value="clinic">Clinic</option>
+                                                            <option value="telehealth">Telehealth</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="form-group" style="margin-top: 20px;">
+                                    <label>Notes (optional)</label>
+                                    <textarea class="swal2-textarea" placeholder="Any special notes about your availability..."></textarea>
+                                </div>
+                            `,
+                            showCancelButton: true,
+                            confirmButtonText: 'Save Availability',
+                            width: '800px'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                showSuccessToast('Availability schedule updated!');
+                            }
+                        });
+                    }
+                });
+            });
+
+            // ==================== VIEW ALL REVIEWS LINK ====================
+            const viewAllReviews = document.querySelector('.view-all');
+            if (viewAllReviews) {
+                viewAllReviews.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'All Patient Reviews',
+                        html: `
+                            <div class="all-reviews">
+                                ${Array(10).fill().map((_, i) => `
+                                    <div class="review-item">
+                                        <div class="review-avatar">
+                                            <img src="https://randomuser.me/api/portraits/${i % 2 ? 'men' : 'women'}/${30 + i}.jpg" alt="Patient">
+                                        </div>
+                                        <div class="review-content">
+                                            <div class="review-header">
+                                                <div class="review-author">${['John', 'Sarah', 'Michael', 'Emily', 'David', 'Jessica'][i % 6]} ${['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia'][i % 6]}</div>
+                                                <div class="review-date">${new Date(Date.now() - (i * 5 * 24 * 60 * 60 * 1000)).toLocaleDateString()}</div>
+                                            </div>
+                                            <div class="review-rating">
+                                                ${'<i class="fas fa-star"></i>'.repeat(5 - (i % 2))}
+                                            </div>
+                                            <div class="review-text">
+                                                ${[
+                                                    "Dr. Johnson is an exceptional cardiologist who provided excellent care.",
+                                                    "Very professional and knowledgeable. Explained everything clearly.",
+                                                    "The wait time was a bit long but the care was worth it.",
+                                                    "Highly recommend Dr. Johnson for anyone with heart concerns.",
+                                                    "The entire staff was friendly and professional.",
+                                                    "Dr. Johnson took the time to answer all my questions.",
+                                                    "I've been seeing Dr. Johnson for years and trust her completely.",
+                                                    "The office is well-run and appointments are efficient.",
+                                                    "Excellent bedside manner and clinical expertise.",
+                                                    "Would give more stars if possible!"
+                                                ][i]}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `,
+                        width: '800px',
+                        showConfirmButton: false,
+                        customClass: {
+                            htmlContainer: 'all-reviews-container'
+                        }
+                    });
+                });
+            }
+
+            // ==================== RESPONSIVE SIDEBAR TOGGLE ====================
+            function handleSidebar() {
+                const sidebar = document.querySelector('.sidebar');
+                if (window.innerWidth <= 768) {
+                    sidebar.style.display = 'none';
+                    // In a real app, you would add a hamburger menu button here
+                } else {
+                    sidebar.style.display = 'flex';
+                }
+            }
+
+            window.addEventListener('resize', handleSidebar);
+            handleSidebar(); // Initial check
+
+            // ==================== STYLES FOR SWAL MODALS ====================
+            const style = document.createElement('style');
+            style.textContent = `
+                .swal2-popup {
+                    font-family: 'Poppins', sans-serif;
+                }
+                .swal2-title {
+                    font-size: 22px;
+                    font-weight: 600;
+                }
+                .edit-form .form-group,
+                .certification-form .form-group,
+                .password-form .form-group,
+                .education-form .form-group,
+                .experience-form .form-group {
+                    margin-bottom: 15px;
+                }
+                .edit-form label,
+                .certification-form label,
+                .password-form label,
+                .education-form label,
+                .experience-form label {
+                    display: block;
+                    margin-bottom: 5px;
+                    font-weight: 500;
+                }
+                .notifications-container {
+                    max-height: 400px;
+                    overflow-y: auto;
+                }
+                .notification-item {
+                    padding: 10px;
+                    border-bottom: 1px solid #eee;
+                }
+                .notification-item.unread {
+                    background-color: #f8f9fa;
+                }
+                .notification-title {
+                    font-weight: 600;
+                    margin-bottom: 5px;
+                }
+                .notification-message {
+                    color: #555;
+                    margin-bottom: 5px;
+                }
+                .notification-time {
+                    font-size: 12px;
+                    color: #888;
+                }
+                .all-reviews {
+                    max-height: 500px;
+                    overflow-y: auto;
+                }
+                .all-reviews .review-item {
+                    padding: 15px 0;
+                    border-bottom: 1px solid #eee;
+                }
+                .availability-edit-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                .availability-edit-table th,
+                .availability-edit-table td {
+                    padding: 8px;
+                    text-align: left;
+                    border-bottom: 1px solid #eee;
+                }
+                .availability-edit-table th {
+                    background-color: #f8f9fa;
+                }
+                .swal2-select {
+                    width: 100%;
+                    padding: 8px;
+                    border-radius: 4px;
+                    border: 1px solid #ddd;
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
+</body>
+</html>

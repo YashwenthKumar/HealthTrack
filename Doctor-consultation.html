@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthTrack Pro - Doctor Consultations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="doctor-consultations.css">
+    <style>
+    /* Add these styles to your existing CSS */
+    .dashboard-layout {
+        position: relative;
+    }
+    
+    .sidebar {
+        position: fixed;
+        height: 100vh;
+        overflow-y: auto; /* Enable scrolling if content exceeds viewport height */
+        z-index: 100; /* Ensure sidebar stays above other content */
+    }
+    
+    .main-content {
+        margin-left: 240px; /* Match the width of your sidebar */
+        width: calc(100% - 240px); /* Adjust width to account for fixed sidebar */
+        overflow-x: hidden;
+    }
+    
+    /* For responsive adjustments */
+    @media (max-width: 992px) {
+        .sidebar {
+            width: 60px;
+        }
+        .main-content {
+            margin-left: 60px;
+            width: calc(100% - 60px);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar {
+            position: static;
+            width: 100%;
+            height: auto;
+        }
+        .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Doctor Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../assets/images/doctor-avatar.jpg" alt="Doctor" class="doctor-avatar">
+                <div class="doctor-info">
+                    <h3>Dr. Michael Chen</h3>
+                    <p>Cardiologist</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="doctor-dashboard.html"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+                    <li class="active"><a href="doctor-consultations.html"><i class="fas fa-calendar-check"></i> <span>Consultations</span></a></li>
+                    <li><a href="doctor-patients.html"><i class="fas fa-user-injured"></i> <span>Patients</span></a></li>
+                    <li><a href="doctor-records.html"><i class="fas fa-file-medical"></i> <span>Medical Records</span></a></li>
+                    <li><a href="doctor-prescriptions.html"><i class="fas fa-prescription-bottle-alt"></i> <span>Prescriptions</span></a></li>
+                    <li><a href="doctor-telemedicine.html"><i class="fas fa-video"></i> <span>Telemedicine</span></a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="../login.html" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search patients, appointments...">
+                </div>
+                <div class="header-actions">
+                    <div class="notification-bell">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-profile">
+                        <img src="../assets/images/doctor-avatar.jpg" alt="Doctor" class="doctor-avatar">
+                    </div>
+                </div>
+            </header>
+
+            <div class="consultation-container">
+                <!-- Consultation Tabs -->
+                <div class="consultation-tabs">
+                    <button class="tab-btn active" data-tab="upcoming">Upcoming (5)</button>
+                    <button class="tab-btn" data-tab="completed">Completed (12)</button>
+                    <button class="tab-btn" data-tab="cancelled">Cancelled (2)</button>
+                    <button class="tab-btn" data-tab="all">All Consultations</button>
+                </div>
+
+                <!-- Consultation Filters -->
+                <div class="consultation-filters">
+                    <div class="filter-group">
+                        <label for="consultation-type">Type:</label>
+                        <select id="consultation-type">
+                            <option value="all">All Types</option>
+                            <option value="video">Video Consultation</option>
+                            <option value="in-person">In-Person</option>
+                            <option value="follow-up">Follow-up</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="date-range">Date Range:</label>
+                        <input type="date" id="date-from">
+                        <span>to</span>
+                        <input type="date" id="date-to">
+                    </div>
+                    
+                    <button class="btn btn-primary btn-sm">Apply Filters</button>
+                </div>
+
+                <!-- Consultation List -->
+                <div class="consultation-list">
+                    <!-- Consultation Card 1 - Upcoming -->
+                    <div class="consultation-card upcoming">
+                        <div class="consultation-header">
+                            <div class="patient-info">
+                                <img src="../assets/images/patient1.jpg" alt="Patient" class="patient-avatar">
+                                <div>
+                                    <h4>Jennifer Smith</h4>
+                                    <p>ID: #PT1001 • 32 years</p>
+                                </div>
+                            </div>
+                            <div class="consultation-meta">
+                                <span class="badge badge-primary">Upcoming</span>
+                                <span class="consultation-date">
+                                    <i class="fas fa-calendar-alt"></i> Today, 10:30 AM
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="consultation-body">
+                            <div class="consultation-details">
+                                <p><i class="fas fa-stethoscope"></i> <strong>Type:</strong> Follow-up Consultation</p>
+                                <p><i class="fas fa-comment-medical"></i> <strong>Reason:</strong> Blood pressure monitoring</p>
+                                <p><i class="fas fa-clock"></i> <strong>Duration:</strong> 30 minutes</p>
+                            </div>
+                            
+                            <div class="consultation-actions">
+                                <button class="btn btn-outline btn-sm">
+                                    <i class="fas fa-file-medical"></i> View Records
+                                </button>
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="fas fa-video"></i> Start Consultation
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consultation Card 2 - Completed -->
+                    <div class="consultation-card completed">
+                        <div class="consultation-header">
+                            <div class="patient-info">
+                                <img src="../assets/images/patient2.jpg" alt="Patient" class="patient-avatar">
+                                <div>
+                                    <h4>Michael Johnson</h4>
+                                    <p>ID: #PT1002 • 45 years</p>
+                                </div>
+                            </div>
+                            <div class="consultation-meta">
+                                <span class="badge badge-success">Completed</span>
+                                <span class="consultation-date">
+                                    <i class="fas fa-calendar-alt"></i> Yesterday, 2:00 PM
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="consultation-body">
+                            <div class="consultation-details">
+                                <p><i class="fas fa-stethoscope"></i> <strong>Type:</strong> Video Consultation</p>
+                                <p><i class="fas fa-comment-medical"></i> <strong>Reason:</strong> Diabetes management</p>
+                                <p><i class="fas fa-prescription-bottle-alt"></i> <strong>Prescribed:</strong> Metformin 500mg</p>
+                            </div>
+                            
+                            <div class="consultation-actions">
+                                <button class="btn btn-outline btn-sm">
+                                    <i class="fas fa-file-alt"></i> View Notes
+                                </button>
+                                <button class="btn btn-outline btn-sm">
+                                    <i class="fas fa-calendar-plus"></i> Schedule Follow-up
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Consultation Card 3 - Cancelled -->
+                    <div class="consultation-card cancelled">
+                        <div class="consultation-header">
+                            <div class="patient-info">
+                                <img src="../assets/images/patient3.jpg" alt="Patient" class="patient-avatar">
+                                <div>
+                                    <h4>Sarah Williams</h4>
+                                    <p>ID: #PT1003 • 28 years</p>
+                                </div>
+                            </div>
+                            <div class="consultation-meta">
+                                <span class="badge badge-danger">Cancelled</span>
+                                <span class="consultation-date">
+                                    <i class="fas fa-calendar-alt"></i> Mar 28, 2025, 9:00 AM
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="consultation-body">
+                            <div class="consultation-details">
+                                <p><i class="fas fa-stethoscope"></i> <strong>Type:</strong> Annual Checkup</p>
+                                <p><i class="fas fa-comment-medical"></i> <strong>Reason:</strong> Routine examination</p>
+                                <p><i class="fas fa-info-circle"></i> <strong>Status:</strong> Patient cancelled</p>
+                            </div>
+                            
+                            <div class="consultation-actions">
+                                <button class="btn btn-outline btn-sm">
+                                    <i class="fas fa-envelope"></i> Send Reminder
+                                </button>
+                                <button class="btn btn-primary btn-sm">
+                                    <i class="fas fa-calendar-check"></i> Reschedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i> New Consultation
+                    </button>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-calendar-alt"></i> View Calendar
+                    </button>
+                    <button class="btn btn-outline">
+                        <i class="fas fa-download"></i> Export List
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../assets/js/doctor-consultations.js"></script>
+</body>
+</html>
